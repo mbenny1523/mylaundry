@@ -100,17 +100,3 @@ INSERT INTO tb_paket (nama_paket, harga_per_kg) VALUES
 ('Baju', 10000),
 ('Celana', 12000),
 ('Karpet / Selimut', 15000);
-
--- User default
--- admin/admin123, ahmad/ahmad123, siti/siti123, budi/budi123
-INSERT INTO tb_user (nama, username, password, id_outlet, role) VALUES
-('Administrator', 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 'admin'),
-('Ahmad Fauzi', 'ahmad', '$2y$10$IRNJyCVaNZM57wkXoS68L.MHHzr4W1MgWkoRzUf1TirPSW.4g/34.', 1, 'owner'),
-('Siti Nurhaliza', 'siti', '$2y$10$4mQhLXhia/MgiBdwXZQ3JeW.GdW5IQrJTFN/rjXfPUn8mcI.7NP8a', 1, 'kasir'),
-('Budi Santoso', 'budi', '$2y$10$Gc7pve0gfkAA3BiBltz1GOGgMjFnU0wIMrSV2gW7momfxsngupkEy', 2, 'kasir');
-
--- Member sample
-INSERT INTO tb_member (kode_member, nama, alamat, jenis_kelamin, telp) VALUES
-('MBR-001', 'Ahmad Fauzi', 'Jl. Kenanga No. 10', 'L', '081300000001'),
-('MBR-002', 'Siti Nurhaliza', 'Jl. Mawar No. 5', 'P', '081300000002'),
-('MBR-003', 'Budi Santoso', 'Jl. Melati No. 3', 'L', '081300000003');
