@@ -6,20 +6,28 @@ if (!isAdmin() && !isOwner()) { header('Location: index.php'); exit; }
 $tglMulai = $_GET['tgl_mulai'] ?? date('Y-m-01');
 $tglSelesai = $_GET['tgl_selesai'] ?? date('Y-m-d');
 
-$stmt = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, o.nama as outlet_nama, u.nama as user_nama, p.nama_paket
-    FROM tb_transaksi t
-    JOIN tb_member m ON t.id_member = m.id
-    JOIN tb_outlet o ON t.id_outlet = o.id
-    JOIN tb_user u ON t.id_user = u.id
-    JOIN tb_paket p ON t.id_paket = p.id
-    WHERE t.tgl BETWEEN ? AND ?
-    ORDER BY t.tgl DESC, t.id DESC");
-$stmt->execute([$tglMulai, $tglSelesai]);
-$data = $stmt->fetchAll();
+try {
+    $stmt = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, o.nama as outlet_nama, u.nama as user_nama, p.nama_paket
+        FROM tb_transaksi t
+        LEFT JOIN tb_member m ON t.id_member = m.id
+        LEFT JOIN tb_outlet o ON t.id_outlet = o.id
+        LEFT JOIN tb_user u ON t.id_user = u.id
+        LEFT JOIN tb_paket p ON t.id_paket = p.id
+        WHERE t.tgl BETWEEN ? AND ?
+        ORDER BY t.tgl DESC, t.id DESC");
+    $stmt->execute([$tglMulai, $tglSelesai]);
+    $data = $stmt->fetchAll();
+} catch (Exception $e) {
+    $data = [];
+}
 
-$stmtOmzet = $pdo->prepare("SELECT COALESCE(SUM(biaya), 0) FROM tb_transaksi WHERE tgl BETWEEN ? AND ? AND pembayaran = 'dibayar'");
-$stmtOmzet->execute([$tglMulai, $tglSelesai]);
-$totalOmzet = $stmtOmzet->fetchColumn();
+try {
+    $stmtOmzet = $pdo->prepare("SELECT COALESCE(SUM(biaya), 0) FROM tb_transaksi WHERE tgl BETWEEN ? AND ? AND pembayaran = 'dibayar'");
+    $stmtOmzet->execute([$tglMulai, $tglSelesai]);
+    $totalOmzet = $stmtOmzet->fetchColumn();
+} catch (Exception $e) {
+    $totalOmzet = 0;
+}
 
 include 'include/header.php';
 include 'include/sidebar.php';

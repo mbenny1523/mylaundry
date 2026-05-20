@@ -1,17 +1,9 @@
--- ============================================
--- MyLaundry Database Schema
--- Engine: InnoDB (untuk support Foreign Key)
--- ============================================
-
 CREATE DATABASE IF NOT EXISTS db_laundry
   DEFAULT CHARACTER SET utf8mb4
   DEFAULT COLLATE utf8mb4_general_ci;
 
 USE db_laundry;
 
--- ============================================
--- 1. Tabel Outlet
--- ============================================
 CREATE TABLE IF NOT EXISTS tb_outlet (
     id INT(11) NOT NULL AUTO_INCREMENT,
     nama VARCHAR(100) NOT NULL,
@@ -20,9 +12,6 @@ CREATE TABLE IF NOT EXISTS tb_outlet (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- 2. Tabel User
--- ============================================
 CREATE TABLE IF NOT EXISTS tb_user (
     id INT(11) NOT NULL AUTO_INCREMENT,
     nama VARCHAR(100) NOT NULL,
@@ -34,9 +23,6 @@ CREATE TABLE IF NOT EXISTS tb_user (
     FOREIGN KEY (id_outlet) REFERENCES tb_outlet(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- 3. Tabel Member
--- ============================================
 CREATE TABLE IF NOT EXISTS tb_member (
     id INT(11) NOT NULL AUTO_INCREMENT,
     kode_member VARCHAR(20) NOT NULL UNIQUE,
@@ -47,9 +33,6 @@ CREATE TABLE IF NOT EXISTS tb_member (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- 4. Tabel Paket Layanan
--- ============================================
 CREATE TABLE IF NOT EXISTS tb_paket (
     id INT(11) NOT NULL AUTO_INCREMENT,
     nama_paket VARCHAR(100) NOT NULL,
@@ -57,9 +40,6 @@ CREATE TABLE IF NOT EXISTS tb_paket (
     PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- 5. Tabel Transaksi
--- ============================================
 CREATE TABLE IF NOT EXISTS tb_transaksi (
     id INT(11) NOT NULL AUTO_INCREMENT,
     id_outlet INT(11) NOT NULL,
@@ -86,16 +66,10 @@ CREATE TABLE IF NOT EXISTS tb_transaksi (
     FOREIGN KEY (id_user) REFERENCES tb_user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ============================================
--- Data Default
--- ============================================
-
--- Outlet default
 INSERT INTO tb_outlet (nama, alamat, telp) VALUES
 ('MyLaundry Pusat', 'Jl. Merdeka No. 1, Jakarta', '081234567890'),
 ('MyLaundry Cabang 1', 'Jl. Sudirman No. 25, Bandung', '081298765432');
 
--- Paket layanan
 INSERT INTO tb_paket (nama_paket, harga_per_kg) VALUES
 ('Baju', 10000),
 ('Celana', 12000),

@@ -9,10 +9,10 @@ $trx = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, m.telp a
     o.nama as outlet_nama, o.alamat as outlet_alamat, o.telp as outlet_telp, 
     u.nama as user_nama, p.nama_paket, p.harga_per_kg
     FROM tb_transaksi t 
-    JOIN tb_member m ON t.id_member = m.id 
-    JOIN tb_outlet o ON t.id_outlet = o.id 
-    JOIN tb_user u ON t.id_user = u.id 
-    JOIN tb_paket p ON t.id_paket = p.id
+    LEFT JOIN tb_member m ON t.id_member = m.id 
+    LEFT JOIN tb_outlet o ON t.id_outlet = o.id 
+    LEFT JOIN tb_user u ON t.id_user = u.id 
+    LEFT JOIN tb_paket p ON t.id_paket = p.id
     WHERE t.id = ?");
 $trx->execute([$id]);
 $trx = $trx->fetch();
@@ -23,7 +23,7 @@ if (!$trx) { header('Location: transaksi.php'); exit; }
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice <?= htmlspecialchars($trx['kode_invoice']) ?> - MyLaundry</title>
+    <title>Invoice <?= htmlspecialchars($trx['kode_invoice'] ?? '') ?> - MyLaundry</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -56,8 +56,9 @@ if (!$trx) { header('Location: transaksi.php'); exit; }
         .ket-box { background: rgba(59,130,246,0.08); border-radius: 8px; padding: 10px 14px; margin-top: 12px; font-size: 12px; color: #94a3b8; text-align: center; }
 
         @media print {
-            body { background: #fff !important; color: #000 !important; }
-            .invoice-card { background: #fff !important; box-shadow: none !important; border: none !important; }
+            body { background: #fff !important; color: #000 !important; display: block !important; min-height: auto !important; padding: 0 !important; }
+            .invoice-container { max-width: 100% !important; width: 100% !important; }
+            .invoice-card { background: #fff !important; box-shadow: none !important; border: none !important; padding: 0 !important; }
             .invoice-header .logo { color: #000 !important; }
             .invoice-header .outlet, .invoice-header .outlet-detail { color: #555 !important; }
             .invoice-code span { background: #eee !important; color: #333 !important; }
@@ -76,19 +77,19 @@ if (!$trx) { header('Location: transaksi.php'); exit; }
         <div class="invoice-card">
             <div class="invoice-header">
                 <div class="logo">🧺 MyLaundry</div>
-                <div class="outlet"><?= htmlspecialchars($trx['outlet_nama']) ?></div>
-                <div class="outlet-detail"><?= htmlspecialchars($trx['outlet_alamat']) ?> | <?= htmlspecialchars($trx['outlet_telp']) ?></div>
+                <div class="outlet"><?= htmlspecialchars($trx['outlet_nama'] ?? '') ?></div>
+                <div class="outlet-detail"><?= htmlspecialchars($trx['outlet_alamat'] ?? '') ?> | <?= htmlspecialchars($trx['outlet_telp'] ?? '') ?></div>
             </div>
 
-            <div class="invoice-code"><span><?= htmlspecialchars($trx['kode_invoice']) ?></span></div>
+            <div class="invoice-code"><span><?= htmlspecialchars($trx['kode_invoice'] ?? '') ?></span></div>
 
-            <div class="detail-row"><span class="label">Pelanggan</span><span class="value"><?= htmlspecialchars($trx['member_nama']) ?></span></div>
-            <div class="detail-row"><span class="label">Kode Member</span><span class="value"><?= htmlspecialchars($trx['kode_member']) ?></span></div>
-            <div class="detail-row"><span class="label">Telepon</span><span class="value"><?= htmlspecialchars($trx['member_telp']) ?></span></div>
+            <div class="detail-row"><span class="label">Pelanggan</span><span class="value"><?= htmlspecialchars($trx['member_nama'] ?? '') ?></span></div>
+            <div class="detail-row"><span class="label">Kode Member</span><span class="value"><?= htmlspecialchars($trx['kode_member'] ?? '') ?></span></div>
+            <div class="detail-row"><span class="label">Telepon</span><span class="value"><?= htmlspecialchars($trx['member_telp'] ?? '') ?></span></div>
 
             <div class="divider"></div>
 
-            <div class="detail-row"><span class="label">Paket</span><span class="value"><?= htmlspecialchars($trx['nama_paket']) ?></span></div>
+            <div class="detail-row"><span class="label">Paket</span><span class="value"><?= htmlspecialchars($trx['nama_paket'] ?? '') ?></span></div>
             <div class="detail-row"><span class="label">Harga/kg</span><span class="value">Rp <?= number_format($trx['harga_per_kg'], 0, ',', '.') ?></span></div>
             <div class="detail-row"><span class="label">Berat</span><span class="value"><?= number_format($trx['berat'], 1) ?> kg</span></div>
             <div class="detail-row"><span class="label">Subtotal</span><span class="value">Rp <?= number_format($trx['subtotal'], 0, ',', '.') ?></span></div>
@@ -104,15 +105,15 @@ if (!$trx) { header('Location: transaksi.php'); exit; }
 
             <div class="detail-row"><span class="label">Tanggal Masuk</span><span class="value"><?= date('d/m/Y', strtotime($trx['tgl'])) ?></span></div>
             <div class="detail-row"><span class="label">Batas Waktu</span><span class="value"><?= date('d/m/Y', strtotime($trx['batas_waktu'])) ?></span></div>
-            <div class="detail-row"><span class="label">Status</span><span class="value"><?= ucfirst($trx['status']) ?></span></div>
+            <div class="detail-row"><span class="label">Status</span><span class="value"><?= ucfirst($trx['status'] ?? '') ?></span></div>
             <div class="detail-row">
                 <span class="label">Pembayaran</span>
                 <span class="value"><span class="status-badge <?= $trx['pembayaran'] === 'dibayar' ? 'status-paid' : 'status-unpaid' ?>"><?= $trx['pembayaran'] === 'dibayar' ? 'Lunas' : 'Belum Lunas' ?></span></span>
             </div>
-            <?php if ($trx['tgl_bayar']): ?>
+            <?php if (!empty($trx['tgl_bayar']) && $trx['tgl_bayar'] !== '0000-00-00'): ?>
             <div class="detail-row"><span class="label">Tgl Bayar</span><span class="value"><?= date('d/m/Y', strtotime($trx['tgl_bayar'])) ?></span></div>
             <?php endif; ?>
-            <div class="detail-row"><span class="label">Kasir</span><span class="value"><?= htmlspecialchars($trx['user_nama']) ?></span></div>
+            <div class="detail-row"><span class="label">Kasir</span><span class="value"><?= htmlspecialchars($trx['user_nama'] ?? '') ?></span></div>
 
             <?php if (!empty($trx['keterangan'])): ?>
             <div class="ket-box"><i class="fas fa-info-circle" style="margin-right:4px"></i><?= htmlspecialchars($trx['keterangan']) ?></div>

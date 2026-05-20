@@ -76,17 +76,30 @@ if ($filterStatus && in_array($filterStatus, ['baru', 'proses', 'selesai', 'diam
     $params[] = $filterStatus;
 }
 
-$data = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, o.nama as outlet_nama, p.nama_paket
-    FROM tb_transaksi t 
-    JOIN tb_member m ON t.id_member = m.id 
-    JOIN tb_outlet o ON t.id_outlet = o.id 
-    JOIN tb_paket p ON t.id_paket = p.id $where
-    ORDER BY t.id DESC");
-$data->execute($params);
-$data = $data->fetchAll();
+try {
+    $data = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, o.nama as outlet_nama, p.nama_paket
+        FROM tb_transaksi t 
+        LEFT JOIN tb_member m ON t.id_member = m.id 
+        LEFT JOIN tb_outlet o ON t.id_outlet = o.id 
+        LEFT JOIN tb_paket p ON t.id_paket = p.id $where
+        ORDER BY t.id DESC");
+    $data->execute($params);
+    $data = $data->fetchAll();
+} catch (Exception $e) {
+    $data = [];
+}
 
-$members = $pdo->query("SELECT * FROM tb_member ORDER BY nama")->fetchAll();
-$pakets = $pdo->query("SELECT * FROM tb_paket ORDER BY id")->fetchAll();
+try {
+    $members = $pdo->query("SELECT * FROM tb_member ORDER BY nama")->fetchAll();
+} catch (Exception $e) {
+    $members = [];
+}
+
+try {
+    $pakets = $pdo->query("SELECT * FROM tb_paket ORDER BY id")->fetchAll();
+} catch (Exception $e) {
+    $pakets = [];
+}
 
 include 'include/header.php';
 include 'include/sidebar.php';
@@ -141,7 +154,7 @@ include 'include/sidebar.php';
                             <?php if ($t['pembayaran'] === 'belum_dibayar'): ?>
                             <a href="konfirmasi_bayar.php?id=<?= $t['id'] ?>" class="btn btn-success-custom btn-sm" title="Bayar"><i class="fas fa-money-bill"></i></a>
                             <?php endif; ?>
-                            <a href="cetak_invoice.php?id=<?= $t['id'] ?>" class="btn btn-primary-custom btn-sm" title="Cetak"><i class="fas fa-print"></i></a>
+                            <a href="cetak_invoice.php?id=<?= $t['id'] ?>" target="_blank" class="btn btn-primary-custom btn-sm" title="Cetak"><i class="fas fa-print"></i></a>
                             <button class="btn btn-danger-custom btn-sm" onclick="confirmDelete('transaksi.php?delete=<?= $t['id'] ?>')"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>

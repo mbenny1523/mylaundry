@@ -24,10 +24,10 @@ $trx = $pdo->prepare("SELECT t.*, m.nama as member_nama, m.kode_member, m.telp a
     o.nama as outlet_nama, o.alamat as outlet_alamat, o.telp as outlet_telp, 
     u.nama as user_nama, p.nama_paket, p.harga_per_kg
     FROM tb_transaksi t 
-    JOIN tb_member m ON t.id_member = m.id 
-    JOIN tb_outlet o ON t.id_outlet = o.id 
-    JOIN tb_user u ON t.id_user = u.id 
-    JOIN tb_paket p ON t.id_paket = p.id
+    LEFT JOIN tb_member m ON t.id_member = m.id 
+    LEFT JOIN tb_outlet o ON t.id_outlet = o.id 
+    LEFT JOIN tb_user u ON t.id_user = u.id 
+    LEFT JOIN tb_paket p ON t.id_paket = p.id
     WHERE t.id = ?");
 $trx->execute([$id]);
 $trx = $trx->fetch();
@@ -80,7 +80,7 @@ include 'include/sidebar.php';
 
             <div class="d-flex gap-2 justify-content-end flex-wrap">
                 <a href="transaksi.php" class="btn btn-secondary" style="border-radius:10px"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
-                <a href="cetak_invoice.php?id=<?= $trx['id'] ?>" class="btn btn-primary-custom"><i class="fas fa-print me-2"></i>Cetak Invoice</a>
+                <a href="cetak_invoice.php?id=<?= $trx['id'] ?>" target="_blank" class="btn btn-primary-custom"><i class="fas fa-print me-2"></i>Cetak Invoice</a>
                 <?php if ($trx['pembayaran'] === 'belum_dibayar' && (isAdmin() || isOwner())): ?>
                 <button class="btn btn-success-custom" data-bs-toggle="modal" data-bs-target="#bayarModal">
                     <i class="fas fa-check-circle me-2"></i>Konfirmasi Bayar
